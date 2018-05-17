@@ -7,15 +7,14 @@ import { SocketService } from './socket.service';
   styleUrls: ['./app.component.css']
 })
 
-
-
-
 export class AppComponent {
   title = 'app';
   messages = [];
   ioConnection: any;
   io;
-  timer = 0;
+  timer = 1;
+
+  checkBox = false;
 
   time = {
     days: 0,
@@ -50,23 +49,54 @@ export class AppComponent {
       console.log('You are connected!');
     });
 
-    this.socket.onEvent('other:connection').subscribe(() => {
+    this.socket.onEvent('other:connection').subscribe((data) => {
       console.log('Somebody else connected!');
+      console.log(data);
     });
 
     this.socket.onEvent('disconnect').subscribe(() => {
       console.log('Somebody disconnected!');
     });
 
+    this.socket.onUpdate().subscribe((data) => {
+      console.log(data);
+      this.timer = data['timer'];
+      this.time = this.returnTimeDisplay(this.timer);
+      this.stringTime = this.numToStringTime(this.time);
+    });
+
+    this.socket.whenInit().subscribe((data) => {
+      console.log(data);
+      this.timer = data['timer'];
+      this.time = this.returnTimeDisplay(this.timer);
+      this.stringTime = this.numToStringTime(this.time);
+    });
+
   }
 
-  // public sendButton() {
-  //   this.socket.send({
-  //     message: 'Testing!'
-  //   });
-  // }
+  public isChecked() {
+    console.log(this.checkBox);
+    if (this.checkBox) {
+      this.timeoutHandler = setInterval(() => {
+        console.log('test');
+        this.timer += 1;
+        this.time = this.returnTimeDisplay(this.timer);
+        this.stringTime = this.numToStringTime(this.time);
+        this.socket.send({
+          message: 'Sending successful!',
+          time: this.timer
+        });
+      }, 10);
+    } else {
+      if (this.timeoutHandler) {
+        clearInterval(this.timeoutHandler);
+        this.timeoutHandler = null;
+      }
+    }
+  }
 
   public mouseu() {
+    if (this.checkBox) { return false; }
     if (this.timeoutHandler) {
       clearInterval(this.timeoutHandler);
       this.timeoutHandler = null;
@@ -74,14 +104,15 @@ export class AppComponent {
   }
 
   public moused() {
-    this.timer = 0;
+    if (this.checkBox) { return false; }
     this.timeoutHandler = setInterval(() => {
       console.log('test');
       this.timer += 1;
       this.time = this.returnTimeDisplay(this.timer);
       this.stringTime = this.numToStringTime(this.time);
       this.socket.send({
-        message: 'Sending successful!'
+        message: 'Sending successful!',
+        time: this.timer
       });
     }, 10);
   }
@@ -145,9 +176,5 @@ export class AppComponent {
 
     return output;
   }
-
-    // If you require the number as a string simply cast back as so
-
-
 
 }

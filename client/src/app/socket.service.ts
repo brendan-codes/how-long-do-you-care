@@ -26,9 +26,21 @@ export class SocketService {
     });
   }
 
+  onUpdate() {
+    return new Observable<object>(observer => {
+      this.socket.on('update', (data) => observer.next(data));
+    });
+  }
+
   onEvent(event) {
     return new Observable<object>(observer => {
       this.socket.on(event, () => observer.next());
+    });
+  }
+
+  whenInit() {
+    return new Observable<object>(observer => {
+      this.socket.on('init', (data) => observer.next(data));
     });
   }
 

@@ -21,7 +21,7 @@ let server = app.listen(port, function() {
     console.log(port);
 })
 
-let total = 0;
+let total = 1;
 
 let io = require('socket.io').listen(server);
 
@@ -29,12 +29,15 @@ io.sockets.on('connection', (socket) => {
 
     console.log("Socket has connected at ", socket.id);
 
-    socket.broadcast.emit('other:connection', {message:'hello friends!'});
+    socket.emit('init', {timer: total});
 
     socket.on('message', function(data){
+        console.log(data);
         total += 1;
         console.log(total);
+        socket.broadcast.emit('update', {timer: total});
     })
 
+    // test
 
 })

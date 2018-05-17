@@ -1,7 +1,10 @@
 <div style="text-align:center">
   <h1>How Long Do You Care?</h1>
-  <button (mousedown)="moused()" (mouseup)="mouseu()" (mouseleave)="mouseu()">CARE</button>
-  <p>You have cared for</p>
-  <p>{{ stringTime.days }}:{{stringTime.hours}}:{{stringTime.minutes}}:{{stringTime.seconds}}:{{stringTime.centiseconds}}</p>
+  <button (mousedown)="moused()" (mouseup)="mouseu()" (mouseleave)="mouseu()">CARE</button><br>
+  <p>Please check this box if you care:</p>
+  <input [(ngModel)]="checkBox" (change)="isChecked()" type="checkbox">
+  <hr>
+  <p>Everybody has collectively cared for</p>
+  <h1 class="time">{{ stringTime.days }}:{{stringTime.hours}}:{{stringTime.minutes}}:{{stringTime.seconds}}:{{stringTime.centiseconds}}</h1>
 </div>
 
